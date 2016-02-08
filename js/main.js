@@ -9,29 +9,88 @@ app.config(function ($locationProvider, $routeProvider) {
     $routeProvider.when("/",
         {
             templateUrl: 'history.html',
-            controller: "AddCtrl"
+            controller: "GetCtrl"
         })
         .when('/spend.html',
             {
                 templateUrl: 'spend.html',
-                controller: "AddCtrl"
+                controller: "GetCtrl"
             })
         .when('/receive.html',
             {
                 templateUrl: 'receive.html',
-                controller: "AddCtrl"
+                controller: "GetCtrl"
             })
         .otherwise({
             templateUrl: 'history.html',
-            controller: "AddCtrl"
+            controller: "GetCtrl"
         });
 });
 
-app.controller('AddCtrl', function ($scope, TransactionStore) {
+app.controller('GetCtrl', function ($scope, TransactionStore) {
     $scope.transactions = [];
     TransactionStore.getTransactionsInMonth(moment().format('YYYY-MM')).then(function (items) {
         $scope.transactions = items;
     });
+
+});
+app.filter('AmountFilter', function () {
+        return function(items, data) {
+            var newTransactions = [];
+            angular.forEach(items, function (item) {
+                newTransactions = item;
+                if(0> item.amount) {
+                    return newTransactions;
+                }
+            })
+        }
+});
+app.controller('TotalCtrl', function ($scope) {
+    $scope.getTotal = function () {
+        var total = 0;
+        for (var i = 0; i < $scope.transactions.length; i++) {
+            var item = $scope.transactions[i];
+            total += item.amount;
+        }
+        return total;
+    }
+});
+
+app.controller("Class", function ($scope) {
+    $scope.class = 'red';
+    $scope.changeClass = function () {
+        if ($scope.class === "red") {
+            $scope.class = "green";
+        }
+        else {
+            $scope.class = "red";
+        }
+    };
+    $scope.hide = function () {
+        $scope.hideZero = !$scope.hideZero;
+    };
+    $scope.removeClass = function () {
+        for (i = 0; i < $scope.transactions.length; i++) {
+            var item = $scope.transactions[i];
+            if (item.amount < 0) {
+                $scope.class = '';
+            }
+        }
+    };
+});
+
+app.controller('AddCtrl', function ($scope, TransactionStore) {
+    $scope.transactions = {};
+    $scope.adding = function () {
+        var data = ({
+            description: $scope.description,
+            amount: $scope.amount,
+            date: $scope.date
+        });
+        TransactionStore.add(data).then(function (data) {
+            $scope.transactions = data;
+        })
+    };
 });
 
 app.factory('TransactionStore', function ($http, $q) {

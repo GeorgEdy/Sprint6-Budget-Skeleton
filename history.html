@@ -1,29 +1,33 @@
-<div class="container container-main">
+<div class="container container-main" ng-controller="TotalCtrl">
     <div class="page-header">
-        <h1>1000
+        <h1>{{ getTotal() }}
             <small>RON</small>
         </h1>
     </div>
+    <div ng-controller="Class">
         <div>
             <div class="align-center">
                 <div class="btn-group" role="group">
-                    <a href="" class="btn btn-primary">Balance</a>
-                    <a href="" class="btn btn-default">Income</a>
-                    <a href="" class="btn btn-default">Spendings</a>
+                    <a href="" class="btn btn-primary" ng-click="balance" >Balance</a>
+                    <a href="" class="btn btn-default" ng-click="income">Income</a>
+                    <a href="" class="btn btn-default" ng-click="spendings">Spendings</a>
                 </div>
             </div>
             <div class="table-container">
                 <table class="table table-hover">
                     <tbody>
-                    <tr ng-repeat="item in transactions ">
+                    <tr ng-class="class" ng-repeat="item in transactions | filter: AmountFilter">
                         <td>{{item.date}}</td>
                         <td>{{ item.description }}</td>
                         <td>{{ item.amount }}</td>
+                        <td><button class="btn btn-danger"><i class="glyphicon glyphicon-remove"></i></button></td>
+
                     </tr>
                     </tbody>
                 </table>
             </div>
         </div>
+    </div>
     <div class="buttons">
         <a href="/receive.html" class="btn btn-default"><i class="glyphicon glyphicon-plus"></i> Receive</a>
         <a href="/spend.html" class="btn btn-default right">Spend <i class="glyphicon glyphicon-minus"></i></a>
